@@ -1,0 +1,38 @@
+hharmon ung 
+4/4/2026
+a movie library manager that uses json to store data
+app.py that is used for website applications
+
+the app uses flask as the web server, when you fill out the form for adding a movie, browser sends it to flask, flask calls the function, function writes to the json file
+and finally the page reloads with new movie added.
+
+requirments
+- Python 3.x
+- Flask
+
+flask is needed in order for the website to work
+
+I created a virtual machine to hold flask
+go to directory of this folder in the cmd
+python -m venv venv or py -m venv venv
+
+run this line to use the virtual environment
+venv\Scripts\activate.bat
+
+install flask
+pip install flask
+
+run app
+python app.py
+or
+py app.py
+
+open browser and go to
+http://127.0.0.1:5000
+
+to stop app, crtl + c
+in the terminal
+
+plz note:
+- Movie data is saved automatically to `movies.json` in the project folder
+- The file will be created on the first run
