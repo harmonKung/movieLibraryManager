@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Movie Library</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .stats {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-box {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 12px 20px;
+      text-align: center;
+    }
+
+    .stat-box span {
+      display: block;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .stat-box p {
+      margin: 0;
+      font-size: 13px;
+      color: #888;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    input[type="text"] {
+      padding: 7px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      width: 220px;
+    }
+
+    select {
+      padding: 7px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    button, .tab-link {
+      padding: 7px 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: white;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      color: #333;
+    }
+
+    button:hover, .tab-link:hover {
+      background: #eee;
+    }
+
+    .tab-link.active {
+      background: #333;
+      color: white;
+      border-color: #333;
+    }
+
+    .add-btn {
+      background: #4a90d9;
+      color: white;
+      border-color: #4a90d9;
+    }
+
+    .add-btn:hover {
+      background: #3a7bc8;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    th {
+      background: #f0f0f0;
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #555;
+      border-bottom: 1px solid #ddd;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #fafafa;
+    }
+
+    .badge {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .badge-watched   { background: #d4edda; color: #276438; }
+    .badge-unwatched { background: #f0f0f0; color: #666; }
+    .badge-wishlist  { background: #d0e8ff; color: #1a5c99; }
+
+    .stars { color: #f0a500; font-size: 13px; }
+
+    .action-btn {
+      padding: 4px 10px;
+      font-size: 12px;
+      margin-right: 4px;
+    }
+
+    .delete-btn {
+      color: #c0392b;
+      border-color: #e0b0b0;
+    }
+
+    .delete-btn:hover {
+      background: #fdecea;
+    }
+
+    .empty-msg {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+      background: white;
+      border-radius: 6px;
+    }
+
+    /* Modal */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 10;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-bg.open {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      width: 380px;
+      max-width: 95vw;
+    }
+
+    .modal h2 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 18px;
+    }
+
+    .form-row {
+      margin-bottom: 12px;
+    }
+
+    .form-row label {
+      display: block;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 4px;
+    }
+
+    .form-row input,
+    .form-row select {
+      width: 100%;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .save-btn {
+      background: #4a90d9;
+      color: white;
+      border-color: #4a90d9;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎬 My Movie Library</h1>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-box"><span>{{ summary.total }}</span><p>Total</p></div>
+    <div class="stat-box"><span>{{ summary.watched }}</span><p>Watched</p></div>
+    <div class="stat-box"><span>{{ summary.unwatched }}</span><p>Unwatched</p></div>
+    <div class="stat-box"><span>{{ summary.wishlist }}</span><p>Wishlist</p></div>
+    <div class="stat-box"><span>{{ summary.avg_rating or '—' }}</span><p>Avg rating</p></div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <form method="GET" action="/" style="display:contents;">
+      <input type="text" name="q" value="{{ query }}" placeholder="Search movies...">
+      <select name="sort" onchange="this.form.submit()">
+        <option value="added"  {% if sort=='added'  %}selected{% endif %}>Recently added</option>
+        <option value="title"  {% if sort=='title'  %}selected{% endif %}>Title A–Z</option>
+        <option value="rating" {% if sort=='rating' %}selected{% endif %}>Highest rated</option>
+        <option value="year"   {% if sort=='year'   %}selected{% endif %}>Newest first</option>
+      </select>
+      <button type="submit">Search</button>
+    </form>
+
+    <a href="/?status=all"       class="tab-link {% if status_filter=='all'       %}active{% endif %}">All</a>
+    <a href="/?status=watched"   class="tab-link {% if status_filter=='watched'   %}active{% endif %}">Watched</a>
+    <a href="/?status=unwatched" class="tab-link {% if status_filter=='unwatched' %}active{% endif %}">Unwatched</a>
+    <a href="/?status=wishlist"  class="tab-link {% if status_filter=='wishlist'  %}active{% endif %}">Wishlist</a>
+
+    <button class="add-btn" onclick="openAddModal()">+ Add Movie</button>
+  </div>
+
+  <!-- Table -->
+  {% if movies %}
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Year</th>
+        <th>Genre</th>
+        <th>Rating</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in movies %}
+      <tr>
+        <td><strong>{{ m.title }}</strong></td>
+        <td>{{ m.year }}</td>
+        <td>{{ m.genre }}</td>
+        <td>
+          {% if m.rating %}
+            <span class="stars">{{ '★' * m.rating }}{{ '☆' * (5 - m.rating) }}</span>
+          {% else %}
+            <span style="color:#bbb;">—</span>
+          {% endif %}
+        </td>
+        <td><span class="badge badge-{{ m.status }}">{{ m.status|capitalize }}</span></td>
+        <td>
+          <form action="/toggle/{{ m.id }}" method="POST" style="display:inline;">
+            <button class="action-btn" type="submit">
+              {% if m.status == 'watched' %}Unwatch{% else %}Watch{% endif %}
+            </button>
+          </form>
+          <button class="action-btn" onclick="openEditModal({{ m|tojson }})">Edit</button>
+          <form action="/delete/{{ m.id }}" method="POST" style="display:inline;"
+                onsubmit="return confirm('Delete {{ m.title }}?')">
+            <button class="action-btn delete-btn" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-msg">No movies found. Add one!</div>
+  {% endif %}
+
+
+  <!-- Add Modal -->
+  <div class="modal-bg" id="addModal">
+    <div class="modal">
+      <h2>Add Movie</h2>
+      <form action="/add" method="POST">
+        <div class="form-row"><label>Title</label><input type="text" name="title" required placeholder="e.g. Inception"></div>
+        <div class="form-row"><label>Year</label><input type="number" name="year" required placeholder="e.g. 2010" min="1900" max="2030"></div>
+        <div class="form-row"><label>Genre</label><input type="text" name="genre" required placeholder="e.g. Sci-fi"></div>
+        <div class="form-row"><label>Rating</label>
+          <select name="rating">
+            <option value="">Unrated</option>
+            <option value="1">1 star</option>
+            <option value="2">2 stars</option>
+            <option value="3">3 stars</option>
+            <option value="4">4 stars</option>
+            <option value="5">5 stars</option>
+          </select>
+        </div>
+        <div class="form-row"><label>Status</label>
+          <select name="status">
+            <option value="unwatched">Unwatched</option>
+            <option value="watched">Watched</option>
+            <option value="wishlist">Wishlist</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="closeModals()">Cancel</button>
+          <button type="submit" class="save-btn">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal-bg" id="editModal">
+    <div class="modal">
+      <h2>Edit Movie</h2>
+      <form id="editForm" method="POST">
+        <div class="form-row"><label>Title</label><input type="text" name="title" id="e-title" required></div>
+        <div class="form-row"><label>Year</label><input type="number" name="year" id="e-year" required min="1900" max="2030"></div>
+        <div class="form-row"><label>Genre</label><input type="text" name="genre" id="e-genre" required></div>
+        <div class="form-row"><label>Rating</label>
+          <select name="rating" id="e-rating">
+            <option value="">Unrated</option>
+            <option value="1">1 star</option>
+            <option value="2">2 stars</option>
+            <option value="3">3 stars</option>
+            <option value="4">4 stars</option>
+            <option value="5">5 stars</option>
+          </select>
+        </div>
+        <div class="form-row"><label>Status</label>
+          <select name="status" id="e-status">
+            <option value="unwatched">Unwatched</option>
+            <option value="watched">Watched</option>
+            <option value="wishlist">Wishlist</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="closeModals()">Cancel</button>
+          <button type="submit" class="save-btn">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function openAddModal() { document.getElementById('addModal').classList.add('open'); }
+    function closeModals() {
+      document.getElementById('addModal').classList.remove('open');
+      document.getElementById('editModal').classList.remove('open');
+    }
+    function openEditModal(m) {
+      document.getElementById('editForm').action = '/edit/' + m.id;
+      document.getElementById('e-title').value  = m.title;
+      document.getElementById('e-year').value   = m.year;
+      document.getElementById('e-genre').value  = m.genre;
+      document.getElementById('e-rating').value = m.rating || '';
+      document.getElementById('e-status').value = m.status;
+      document.getElementById('editModal').classList.add('open');
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModals(); });
+  </script>
+
+</body>
+</html>
