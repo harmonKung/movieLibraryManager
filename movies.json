@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "last_updated": "2026-05-08T18:37:53",
+  "movies": [
+    {
+      "id": 1,
+      "title": "Interstellar",
+      "year": 2014,
+      "genre": "Sci-fi",
+      "rating": 5,
+      "status": "watched",
+      "added_at": "2026-05-08T17:59:27"
+    },
+    {
+      "id": 2,
+      "title": "Parasite",
+      "year": 2019,
+      "genre": "Thriller",
+      "rating": 5,
+      "status": "unwatched",
+      "added_at": "2026-05-08T17:59:27"
+    },
+    {
+      "id": 3,
+      "title": "Poor Things",
+      "year": 2023,
+      "genre": "Fantasy",
+      "rating": 4,
+      "status": "unwatched",
+      "added_at": "2026-05-08T17:59:27"
+    },
+    {
+      "id": 4,
+      "title": "Dune: Part Two",
+      "year": 2024,
+      "genre": "Sci-fi",
+      "rating": 4,
+      "status": "unwatched",
+      "added_at": "2026-05-08T17:59:27"
+    },
+    {
+      "id": 5,
+      "title": "The Zone of Interest",
+      "year": 2023,
+      "genre": "Drama",
+      "rating": null,
+      "status": "unwatched",
+      "added_at": "2026-05-08T17:59:27"
+    },
+    {
+      "id": 6,
+      "title": "dez nuts",
+      "year": 2002,
+      "genre": "prank",
+      "rating": 2,
+      "status": "unwatched",
+      "added_at": "2026-05-08T18:37:45"
+    }
+  ]
+}
