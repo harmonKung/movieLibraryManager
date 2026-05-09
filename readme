@@ -3,6 +3,8 @@ hharmon ung
 a movie library manager that uses json to store data
 app.py that is used for website applications
 
+made this to play around with json, then I wanted to try playing with making a website app
+
 the app uses flask as the web server, when you fill out the form for adding a movie, browser sends it to flask, flask calls the function, function writes to the json file
 and finally the page reloads with new movie added.
 
